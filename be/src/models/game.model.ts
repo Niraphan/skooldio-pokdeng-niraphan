@@ -10,6 +10,7 @@ type GameState =
 export interface GameSession {
     id: string;
     user_balance: number;
+    current_bet: number;
     state: GameState;
     player_hand: Card[];
     dealer_hand: Card[];
@@ -26,6 +27,7 @@ export interface GameResponse {
     game_id: string;
     state: GameState;
     balance: number;
+    current_bet: number;
 
     player_hand: Card[];
     dealer_hand_visible: Card[];

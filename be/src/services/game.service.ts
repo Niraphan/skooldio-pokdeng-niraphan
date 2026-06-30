@@ -12,6 +12,7 @@ export const createGame = (initialBalance: number) => {
     const session: GameSession = {
         id: gameId,
         user_balance: initialBalance,
+        current_bet: 0,
         state: "WAITING_FOR_CUT",
         player_hand: [],
         dealer_hand: [],
@@ -50,16 +51,16 @@ export const actionInGame = (gameId: string, action: UserAction, amount: number)
             if (action === "draw") {
                 handleUserDraw(game);
                 handleDealerTurn(game);
-                handleEndRound(game, amount);
+                handleEndRound(game);
             } else if (action === "stay") {
                 handleDealerTurn(game);
-                handleEndRound(game, amount);
+                handleEndRound(game);
             } else {
                 throw new Error("Invalid action");
             }
             break;
         case "ROUND_END":
-            handleEndRound(game, amount)
+            handleEndRound(game)
 
             if (action === "next_round") {
                 game.state = "WAITING_FOR_CUT"
@@ -85,6 +86,8 @@ const handleCut = (game: GameSession, amount: number) => {
 
 const handleBet = (game: GameSession, amount: number) => {
     game.user_balance -= amount
+    game.current_bet = amount
+    
     for (let i = 0; i < 2; i++) {
         game.player_hand.push(game.deck.pop()!)
         game.dealer_hand.push(game.deck.pop()!)
@@ -92,7 +95,7 @@ const handleBet = (game: GameSession, amount: number) => {
 
     if (isPok(game.player_hand)) {
         game.winner = "player"
-        game.user_balance += amount * 2
+        game.user_balance += game.current_bet * 2
         game.state = "ROUND_END"
     } else if (isPok(game.dealer_hand)) {
         game.winner = "dealer"
@@ -123,17 +126,17 @@ const handleDealerTurn = (game: GameSession) => {
     game.state = "ROUND_END"
 }
 
-const handleEndRound = (game: GameSession, amount: number) => {
+const handleEndRound = (game: GameSession) => {
     const playerScore = calculateScore(game.player_hand)
     const dealerScore = calculateScore(game.dealer_hand)
 
     if (playerScore > dealerScore) {
         game.winner = "player"
-        game.user_balance += amount * 2
+        game.user_balance += game.current_bet * 2
     } else if (playerScore < dealerScore) {
         game.winner = "dealer"
     } else {
         game.winner = "draw"
-        game.user_balance += amount
+        game.user_balance += game.current_bet
     }
 }

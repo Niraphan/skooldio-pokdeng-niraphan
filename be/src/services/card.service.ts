@@ -20,9 +20,22 @@ export const shuffleDeck = (deck: Card[]) => {
     return deck;
 }
 
-export const cutDeck = (deck: Card[] , number: number) => {
-    const cutIndex = Math.floor(number * deck.length);
-    return deck.slice(cutIndex);
+export const cutDeck = (
+    deck: Card[],
+    amount: number
+) => {
+    
+    if (amount <= 0 || amount >= deck.length) {
+        throw new Error("Invalid cut amount");
+    }
+
+    const top = deck.slice(0, amount);
+    const bottom = deck.slice(amount);
+
+    return [
+        ...bottom,
+        ...top
+    ];
 }
 
 export const calculateScore = (cards: Card[]) => {
