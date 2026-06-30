@@ -139,4 +139,6 @@ const handleEndRound = (game: GameSession) => {
         game.winner = "draw"
         game.user_balance += game.current_bet
     }
+
+    game.state = "ROUND_END"
 }
